@@ -52,17 +52,16 @@ func (s *service) GetProducts(ID int) ([]Products, error) {
 
 func (s *service) UpdatedProduct(getUpdatedInput GetinputID, inputProduct UpdatedProduct) (Products, error) {
 
-	cek := inputProduct.CategoryID
-	cekCategory, err := s.repository.FindById(cek)
-	if cekCategory.ID != cekCategory.Category.ID {
-		return cekCategory, err
-	}
+	// cek := inputProduct.CategoryID
+	// cekCategory, err := s.repository.FindById(cek)
+	// if cekCategory.ID != cekCategory.Category.ID {
+	// 	return cekCategory, err
+	// }
 
-	newProduct, err := s.categoryRepository.FindById(inputProduct.CategoryID)
+	_, err := s.categoryRepository.FindById(inputProduct.CategoryID)
 	if err != nil {
 		return Products{}, err
 	}
-
 	// if newProduct.CategoryID != inputProduct.Category.ID {
 	// 	return cekCategory, errors.New("not an owner the account")
 	// }

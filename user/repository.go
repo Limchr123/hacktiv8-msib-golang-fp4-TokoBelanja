@@ -9,6 +9,7 @@ type Repository interface {
 	FindByEmail(email string) (User, error)
 	Update(user User) (User, error)
 	Delete(user User) (User, error)
+	UpdateBalance(userID int, updateMoney int) error
 }
 
 type repository struct {
@@ -17,6 +18,17 @@ type repository struct {
 
 func NewRepository(db *gorm.DB) *repository {
 	return &repository{db}
+}
+
+func (r *repository) UpdateBalance(userID int, updateMoney int) error {
+	var user User
+
+	err := r.db.Save(&user).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *repository) Save(user User) (User, error) {
@@ -41,7 +53,7 @@ func (r *repository) FindByEmail(email string) (User, error) {
 func (r *repository) FindById(ID int) (User, error) {
 	var user User
 
-	err := r.db.Where("id = ?", ID).Find(&user).Error
+	err := r.db.Where("id = ?", ID).First(&user).Error
 
 	if err != nil {
 		return user, err

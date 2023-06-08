@@ -6,8 +6,9 @@ import (
 )
 
 type TransactionInput struct {
-	ProductID string `json:"title" binding:"required"`
-	Quantity  int    `json:"price" binding:"required"`
+	ProductID int `json:"product_id" binding:"required"`
+	Quantity  int `json:"quantity" binding:"required"`
+	UserID    int `json:"user_id"`
 }
 
 // type LoginInput struct {

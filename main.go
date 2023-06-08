@@ -9,6 +9,7 @@ import (
 	"tokoBelanja/handler"
 	"tokoBelanja/helper"
 	"tokoBelanja/product"
+	"tokoBelanja/transactionhistory"
 	"tokoBelanja/user"
 
 	"github.com/dgrijalva/jwt-go"
@@ -32,13 +33,17 @@ func main() {
 	categoryService := category.NewService(categoryRepository)
 	categoryHandler := handler.NewCategoryHandler(categoryService)
 	productRepository := product.NewRepository(db)
-	productService := product.NewService(productRepository)
+	productService := product.NewService(productRepository, categoryRepository)
 	productHandler := handler.NewProductHandler(productService)
+	transactionRepository := transactionhistory.NewRepository(db)
+	transactionService := transactionhistory.NewService(transactionRepository, productRepository, userRepository)
+	transactionHandler := handler.NewtransactionHandler(transactionService)
 
 	router := gin.Default()
 	api := router.Group("/users")
 	api2 := router.Group("/categories")
 	api3 := router.Group("/products")
+	api4 := router.Group("transactions")
 
 	api.POST("/register", userHandler.RegisterUser)
 	api.POST("/login", userHandler.Login)
@@ -50,6 +55,7 @@ func main() {
 	api3.GET("/", authMiddleware(authService, userService), productHandler.GetProduct)
 	api3.PUT("/:id", authMiddleware(authService, userService), productHandler.UpdateProduct)
 	api3.DELETE("/:id", authMiddleware(authService, userService), productHandler.DeleteProduct)
+	api4.POST("/", authMiddleware(authService, userService), transactionHandler.CreateTransaction)
 
 	router.Run(":8080")
 

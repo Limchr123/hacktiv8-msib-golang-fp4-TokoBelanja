@@ -41,7 +41,7 @@ func (r *repository) Save(category Categorys) (Categorys, error) {
 func (r *repository) FindById(ID int) (Categorys, error) {
 	var category Categorys
 
-	err := r.db.Where("id = ?", ID).Find(&category).Error
+	err := r.db.Where("id = ?", ID).First(&category).Error
 
 	if err != nil {
 		return category, err

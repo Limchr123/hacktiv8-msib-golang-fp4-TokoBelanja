@@ -1,5 +1,12 @@
 package transactionhistory
 
+import (
+	"errors"
+	"fmt"
+	"tokoBelanja/product"
+	"tokoBelanja/user"
+)
+
 type Service interface {
 	CreateTransaction(input TransactionInput) (TransactionHistory, error)
 	// // Login(input LoginInput) (User, error)
@@ -9,21 +16,62 @@ type Service interface {
 }
 
 type service struct {
-	repository Repository
+	repository        Repository
+	repositoryProduct product.Repository
+	repositoryUser    user.Repository
 }
 
-func NewService(repository Repository) *service {
-	return &service{repository}
+func NewService(repository Repository, repositoryProduct product.Repository, repositoryUser user.Repository) *service {
+	return &service{repository, repositoryProduct, repositoryUser}
 }
 
 func (s *service) CreateTransaction(input TransactionInput) (TransactionHistory, error) {
 	transaction := TransactionHistory{}
 
-	transaction.ID = transaction.ID
-	transaction.Quantity = input.Quantity
+	transaction.ProductID = input.ProductID
 
-	newProduct, err := s.repository.Save(product)
+	cek, err := s.repositoryProduct.FindById(input.ProductID)
 	if err != nil {
+		print(err)
+		return TransactionHistory{}, err
+	}
+	if cek.Stock < input.Quantity {
+		print("stock ga muat")
+		return TransactionHistory{}, errors.New("error")
+	}
+
+	cekSaldo, err := s.repositoryUser.FindById(input.UserID)
+	if err != nil {
+		print(err)
+		return TransactionHistory{}, err
+	}
+	if cekSaldo.Balance < (input.Quantity * cek.Price) {
+		print("saldo ga cukup")
+		fmt.Println(cekSaldo.Balance)
+		return TransactionHistory{}, errors.New("error")
+	}
+
+	cekSaldo.Balance = cekSaldo.Balance - (input.Quantity * cek.Price)
+
+	_, err = s.repositoryUser.Update(cekSaldo)
+	if err != nil {
+		print(err)
+		return TransactionHistory{}, err
+	}
+
+	cek.Stock = cek.Stock - input.Quantity
+
+	_, err = s.repositoryProduct.Update(cek)
+	if err != nil {
+		print(err)
+		return TransactionHistory{}, err
+	}
+
+	transaction.Quantity = cek.Stock - input.Quantity
+
+	newProduct, err := s.repository.Save(transaction)
+	if err != nil {
+		print(err)
 		return newProduct, err
 	}
 	return newProduct, nil
