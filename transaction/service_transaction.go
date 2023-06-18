@@ -1,4 +1,4 @@
-package transactionhistory
+package transaction
 
 import (
 	"errors"
@@ -7,25 +7,25 @@ import (
 	"tokoBelanja/user"
 )
 
-type Service interface {
+type ServiceTransaction interface {
 	CreateTransaction(input TransactionInput) (TransactionHistory, error)
 	// // Login(input LoginInput) (User, error)
-	// GetProducts(ID int) ([]Products, error)
+	GetTransaction(ID int) ([]TransactionHistory, error)
 	// DeleteProduct(ID int) (Products, error)
 	// UpdatedProduct(getUpdatedInput GetinputID, inputProduct UpdatedProduct) (Products, error)
 }
 
-type service struct {
-	repository        Repository
-	repositoryProduct product.Repository
-	repositoryUser    user.Repository
+type serviceTransaction struct {
+	repository        RepositoryTransaction
+	repositoryProduct product.RepositoryProduct
+	repositoryUser    user.RepositoryUser
 }
 
-func NewService(repository Repository, repositoryProduct product.Repository, repositoryUser user.Repository) *service {
-	return &service{repository, repositoryProduct, repositoryUser}
+func NewService(repository RepositoryTransaction, repositoryProduct product.RepositoryProduct, repositoryUser user.RepositoryUser) *serviceTransaction {
+	return &serviceTransaction{repository, repositoryProduct, repositoryUser}
 }
 
-func (s *service) CreateTransaction(input TransactionInput) (TransactionHistory, error) {
+func (s *serviceTransaction) CreateTransaction(input TransactionInput) (TransactionHistory, error) {
 	transaction := TransactionHistory{}
 
 	transaction.ProductID = input.ProductID
@@ -77,23 +77,23 @@ func (s *service) CreateTransaction(input TransactionInput) (TransactionHistory,
 	return newProduct, nil
 }
 
-// func (s *service) GetProducts(ID int) ([]Products, error) {
-// 	if ID != 0 {
-// 		product, err := s.repository.FindByUserId(ID)
-// 		if err != nil {
-// 			return product, err
-// 		}
-// 		return product, nil
-// 	}
+func (s *serviceTransaction) GetTransaction(ID int) ([]TransactionHistory, error) {
+	if ID != 0 {
+		transaction, err := s.repository.FindByUserId(ID)
+		if err != nil {
+			return transaction, err
+		}
+		return transaction, nil
+	}
 
-// 	product, err := s.repository.FindAll()
-// 	if err != nil {
-// 		return product, err
-// 	}
-// 	return product, nil
-// }
+	transaction, err := s.repository.FindAll()
+	if err != nil {
+		return transaction, err
+	}
+	return transaction, nil
+}
 
-// func (s *service) Login(input LoginInput) (User, error) {
+// func (s *serviceTransaction) Login(input LoginInput) (User, error) {
 // 	email := input.Email
 // 	password := input.Password
 

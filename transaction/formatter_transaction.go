@@ -1,4 +1,4 @@
-package transactionhistory
+package transaction
 
 // import "time"
 

@@ -1,6 +1,8 @@
 package category
 
-import "time"
+import (
+	"time"
+)
 
 type Categorys struct {
 	ID                int
@@ -8,4 +10,5 @@ type Categorys struct {
 	SoldProductAmount int
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
+	// Product  Products
 }

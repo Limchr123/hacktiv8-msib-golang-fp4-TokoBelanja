@@ -1,6 +1,8 @@
 package category
 
-import "time"
+import (
+	"time"
+)
 
 // import "time"
 
@@ -22,16 +24,16 @@ func FormatterCategory(category Categorys) CategoryFormatter {
 
 }
 
-type UserFormatter struct {
-	Token string `json:"token"`
-}
+// type UserFormatter struct {
+// 	Token string `json:"token"`
+// }
 
-func FormatterUser(Token string) UserFormatter {
-	formatterLogin := UserFormatter{
-		Token: Token,
-	}
-	return formatterLogin
-}
+// func FormatterUser(Token string) UserFormatter {
+// 	formatterLogin := UserFormatter{
+// 		Token: Token,
+// 	}
+// 	return formatterLogin
+// }
 
 type UpdatedCategoryFormatter struct {
 	ID                int       `json:"id"`

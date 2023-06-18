@@ -2,23 +2,24 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 	"tokoBelanja/helper"
-	"tokoBelanja/transactionhistory"
+	"tokoBelanja/transaction"
 	"tokoBelanja/user"
 
 	"github.com/gin-gonic/gin"
 )
 
 type transactionHandler struct {
-	transactionService transactionhistory.Service
+	transactionService transaction.ServiceTransaction
 }
 
-func NewtransactionHandler(service transactionhistory.Service) *transactionHandler {
+func NewtransactionHandler(service transaction.ServiceTransaction) *transactionHandler {
 	return &transactionHandler{service}
 }
 
 func (h *transactionHandler) CreateTransaction(c *gin.Context) {
-	var input transactionhistory.TransactionInput
+	var input transaction.TransactionInput
 
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
@@ -41,5 +42,19 @@ func (h *transactionHandler) CreateTransaction(c *gin.Context) {
 	}
 
 	response := helper.APIresponse(http.StatusOK, newUser)
+	c.JSON(http.StatusOK, response)
+}
+
+func (h *transactionHandler) GetTransaction(c *gin.Context) {
+	idString := c.Param("id")
+	id, _ := strconv.Atoi(idString)
+
+	transaction, err := h.transactionService.GetTransaction(int(id))
+	if err != nil {
+		response := helper.APIresponse(http.StatusBadRequest, "Eror to get product")
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	response := helper.APIresponse(http.StatusOK, transaction)
 	c.JSON(http.StatusOK, response)
 }

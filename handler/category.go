@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 	"tokoBelanja/category"
 	"tokoBelanja/helper"
 	"tokoBelanja/user"
@@ -10,10 +11,10 @@ import (
 )
 
 type categoryHandler struct {
-	categoryService category.Service
+	categoryService category.ServiceCategory
 }
 
-func NewCategoryHandler(service category.Service) *categoryHandler {
+func NewCategoryHandler(service category.ServiceCategory) *categoryHandler {
 	return &categoryHandler{service}
 }
 
@@ -42,7 +43,7 @@ func (h *categoryHandler) CreateCategory(c *gin.Context) {
 }
 
 func (h *categoryHandler) UpdatedCategory(c *gin.Context) {
-	var inputID category.GetinputID
+	var inputID category.GetinputCategoryID
 
 	err := c.ShouldBindUri(&inputID)
 	if err != nil {
@@ -101,5 +102,19 @@ func (h *categoryHandler) DeletedCategory(c *gin.Context) {
 	// responseDeleted := "Your account has been successfully deleted"
 
 	response := helper.APIresponse(http.StatusOK, "Category has been successfully deleted")
+	c.JSON(http.StatusOK, response)
+}
+
+func (h *categoryHandler) GetCategory(c *gin.Context) {
+	idString := c.Param("id")
+	id, _ := strconv.Atoi(idString)
+
+	category, err := h.categoryService.GetCategory(int(id))
+	if err != nil {
+		response := helper.APIresponse(http.StatusBadRequest, "Eror to get product")
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	response := helper.APIresponse(http.StatusOK, category)
 	c.JSON(http.StatusOK, response)
 }

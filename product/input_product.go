@@ -17,7 +17,7 @@ type ProductInput struct {
 // 	Password string `json:"password" binding:"required"`
 // }
 
-type GetinputID struct {
+type GetinputProductID struct {
 	ID int `uri:"id" binding:"required"`
 }
 

@@ -11,10 +11,10 @@ import (
 )
 
 type productHandler struct {
-	productService product.Service
+	productService product.ServiceProduct
 }
 
-func NewProductHandler(service product.Service) *productHandler {
+func NewProductHandler(service product.ServiceProduct) *productHandler {
 	return &productHandler{service}
 }
 
@@ -57,7 +57,7 @@ func (h *productHandler) GetProduct(c *gin.Context) {
 }
 
 func (h *productHandler) UpdateProduct(c *gin.Context) {
-	var inputID product.GetinputID
+	var inputID product.GetinputProductID
 
 	err := c.ShouldBindUri(&inputID)
 	if err != nil {
@@ -91,10 +91,21 @@ func (h *productHandler) UpdateProduct(c *gin.Context) {
 }
 
 func (h *productHandler) DeleteProduct(c *gin.Context) {
-	currentUser := c.MustGet("currentUser").(user.User)
-	userID := currentUser.ID
+	var input product.GetinputProductID
 
-	newDel, err := h.productService.DeleteProduct(userID)
+	err := c.ShouldBindUri(&input)
+	if err != nil {
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"error": errors}
+		response := helper.APIresponse(http.StatusUnprocessableEntity, errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	// currentUser := c.MustGet("currentUser").(user.User)
+	// userID := currentUser.ID
+
+	newDel, err := h.productService.DeleteProduct(input.ID)
 	if err != nil {
 		response := helper.APIresponse(http.StatusUnprocessableEntity, newDel)
 		c.JSON(http.StatusUnprocessableEntity, response)

@@ -1,25 +1,27 @@
 package product
 
-import "tokoBelanja/category"
+import (
+	"tokoBelanja/category"
+)
 
-type Service interface {
+type ServiceProduct interface {
 	CreateProduct(input ProductInput) (Products, error)
 	// Login(input LoginInput) (User, error)
 	GetProducts(ID int) ([]Products, error)
 	DeleteProduct(ID int) (Products, error)
-	UpdatedProduct(getUpdatedInput GetinputID, inputProduct UpdatedProduct) (Products, error)
+	UpdatedProduct(getUpdatedInput GetinputProductID, inputProduct UpdatedProduct) (Products, error)
 }
 
-type service struct {
-	repository         Repository
-	categoryRepository category.Repository
+type serviceProduct struct {
+	repositoryProduct  RepositoryProduct
+	categoryRepository category.RepositoryCategory
 }
 
-func NewService(repository Repository, categoryRepository category.Repository) *service {
-	return &service{repository, categoryRepository}
+func NewServiceProduct(repositoryProduct RepositoryProduct, categoryRepository category.RepositoryCategory) *serviceProduct {
+	return &serviceProduct{repositoryProduct, categoryRepository}
 }
 
-func (s *service) CreateProduct(input ProductInput) (Products, error) {
+func (s *serviceProduct) CreateProduct(input ProductInput) (Products, error) {
 	product := Products{}
 
 	product.Title = input.Title
@@ -27,30 +29,30 @@ func (s *service) CreateProduct(input ProductInput) (Products, error) {
 	product.Stock = input.Stock
 	product.CategoryID = input.CategoryID
 
-	newProduct, err := s.repository.Save(product)
+	newProduct, err := s.repositoryProduct.Save(product)
 	if err != nil {
 		return newProduct, err
 	}
 	return newProduct, nil
 }
 
-func (s *service) GetProducts(ID int) ([]Products, error) {
+func (s *serviceProduct) GetProducts(ID int) ([]Products, error) {
 	if ID != 0 {
-		product, err := s.repository.FindByUserId(ID)
+		product, err := s.repositoryProduct.FindByUserId(ID)
 		if err != nil {
 			return product, err
 		}
 		return product, nil
 	}
 
-	product, err := s.repository.FindAll()
+	product, err := s.repositoryProduct.FindAll()
 	if err != nil {
 		return product, err
 	}
 	return product, nil
 }
 
-func (s *service) UpdatedProduct(getUpdatedInput GetinputID, inputProduct UpdatedProduct) (Products, error) {
+func (s *serviceProduct) UpdatedProduct(getUpdatedInput GetinputProductID, inputProduct UpdatedProduct) (Products, error) {
 
 	// cek := inputProduct.CategoryID
 	// cekCategory, err := s.repository.FindById(cek)
@@ -58,7 +60,9 @@ func (s *service) UpdatedProduct(getUpdatedInput GetinputID, inputProduct Update
 	// 	return cekCategory, err
 	// }
 
-	_, err := s.categoryRepository.FindById(inputProduct.CategoryID)
+
+
+	_, err := s.categoryRepository.FindById(inputProduct.CategoryID)  
 	if err != nil {
 		return Products{}, err
 	}
@@ -66,7 +70,7 @@ func (s *service) UpdatedProduct(getUpdatedInput GetinputID, inputProduct Update
 	// 	return cekCategory, errors.New("not an owner the account")
 	// }
 
-	product, err := s.repository.FindById(getUpdatedInput.ID)
+	product, err := s.repositoryProduct.FindById(getUpdatedInput.ID)
 	if err != nil {
 		return product, err
 	}
@@ -80,7 +84,7 @@ func (s *service) UpdatedProduct(getUpdatedInput GetinputID, inputProduct Update
 	product.Stock = inputProduct.Stock
 	product.CategoryID = inputProduct.CategoryID
 
-	productUpdated, err := s.repository.Update(product)
+	productUpdated, err := s.repositoryProduct.Update(product)
 	if err != nil {
 		return productUpdated, err
 	}
@@ -89,12 +93,13 @@ func (s *service) UpdatedProduct(getUpdatedInput GetinputID, inputProduct Update
 
 }
 
-func (s *service) DeleteProduct(ID int) (Products, error) {
-	product, err := s.repository.FindById(ID)
+func (s *serviceProduct) DeleteProduct(ID int) (Products, error) {
+
+	product, err := s.repositoryProduct.FindById(ID)
 	if err != nil {
 		return product, err
 	}
-	productDel, err := s.repository.Delete(product)
+	productDel, err := s.repositoryProduct.Delete(product)
 
 	if err != nil {
 		return productDel, err
@@ -102,7 +107,7 @@ func (s *service) DeleteProduct(ID int) (Products, error) {
 	return productDel, nil
 }
 
-// func (s *service) GetUserByid(ID int) (Products, error) {
+// func (s *serviceProduct) GetUserByid(ID int) (Products, error) {
 // 	user, err := s.repository.FindById(ID)
 
 // 	if err != nil {

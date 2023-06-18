@@ -9,7 +9,7 @@ import (
 	"tokoBelanja/handler"
 	"tokoBelanja/helper"
 	"tokoBelanja/product"
-	"tokoBelanja/transactionhistory"
+	"tokoBelanja/transaction"
 	"tokoBelanja/user"
 
 	"github.com/dgrijalva/jwt-go"
@@ -29,14 +29,14 @@ func main() {
 	userService := user.NewService(userRepository)
 	authService := auth.NewService()
 	userHandler := handler.NewUserHandler(userService, authService)
-	categoryRepository := category.NewRepository(db)
-	categoryService := category.NewService(categoryRepository)
+	categoryRepository := category.NewRepositoryCategory(db)
+	categoryService := category.NewServiceCategory(categoryRepository)
 	categoryHandler := handler.NewCategoryHandler(categoryService)
-	productRepository := product.NewRepository(db)
-	productService := product.NewService(productRepository, categoryRepository)
+	productRepository := product.NewRepositoryProduct(db)
+	productService := product.NewServiceProduct(productRepository, categoryRepository)
 	productHandler := handler.NewProductHandler(productService)
-	transactionRepository := transactionhistory.NewRepository(db)
-	transactionService := transactionhistory.NewService(transactionRepository, productRepository, userRepository)
+	transactionRepository := transaction.NewRepositoryTransaction(db)
+	transactionService := transaction.NewService(transactionRepository, productRepository, userRepository)
 	transactionHandler := handler.NewtransactionHandler(transactionService)
 
 	router := gin.Default()
@@ -49,6 +49,7 @@ func main() {
 	api.POST("/login", userHandler.Login)
 	api.PATCH("/topup/:id", authMiddleware(authService, userService), userHandler.UpdatedUser)
 	api2.POST("/", authMiddleware(authService, userService), categoryHandler.CreateCategory)
+	api2.GET("/", authMiddleware(authService, userService), categoryHandler.GetCategory)
 	api2.PATCH("/:id", authMiddleware(authService, userService), categoryHandler.UpdatedCategory)
 	api2.DELETE("/:id", authMiddleware(authService, userService), categoryHandler.DeletedCategory)
 	api3.POST("/", authMiddleware(authService, userService), productHandler.CreateProduct)
@@ -56,6 +57,7 @@ func main() {
 	api3.PUT("/:id", authMiddleware(authService, userService), productHandler.UpdateProduct)
 	api3.DELETE("/:id", authMiddleware(authService, userService), productHandler.DeleteProduct)
 	api4.POST("/", authMiddleware(authService, userService), transactionHandler.CreateTransaction)
+	api4.GET("/", authMiddleware(authService, userService), transactionHandler.GetTransaction)
 
 	router.Run(":8080")
 

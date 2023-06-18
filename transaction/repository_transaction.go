@@ -1,8 +1,10 @@
-package transactionhistory
+package transaction
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
-type Repository interface {
+type RepositoryTransaction interface {
 	FindAll() ([]TransactionHistory, error)
 	Save(transaction TransactionHistory) (TransactionHistory, error)
 	FindById(ID int) (TransactionHistory, error)
@@ -11,18 +13,18 @@ type Repository interface {
 	FindByUserId(userID int) ([]TransactionHistory, error)
 }
 
-type repository struct {
+type repositoryTransaction struct {
 	db *gorm.DB
 }
 
-func NewRepository(db *gorm.DB) *repository {
-	return &repository{db}
+func NewRepositoryTransaction(db *gorm.DB) *repositoryTransaction {
+	return &repositoryTransaction{db}
 }
 
-func (r *repository) FindAll() ([]TransactionHistory, error) {
+func (r *repositoryTransaction) FindAll() ([]TransactionHistory, error) {
 	var transaction []TransactionHistory
 
-	err := r.db.Find(&transaction).Error
+	err := r.db.Preload("Product").Find(&transaction).Error
 
 	if err != nil {
 		return transaction, err
@@ -31,7 +33,7 @@ func (r *repository) FindAll() ([]TransactionHistory, error) {
 	return transaction, nil
 }
 
-func (r *repository) Save(transaction TransactionHistory) (TransactionHistory, error) {
+func (r *repositoryTransaction) Save(transaction TransactionHistory) (TransactionHistory, error) {
 	err := r.db.Create(&transaction).Error
 
 	if err != nil {
@@ -40,7 +42,7 @@ func (r *repository) Save(transaction TransactionHistory) (TransactionHistory, e
 	return transaction, nil
 }
 
-func (r *repository) FindByUserId(ID int) ([]TransactionHistory, error) {
+func (r *repositoryTransaction) FindByUserId(ID int) ([]TransactionHistory, error) {
 	var transaction []TransactionHistory
 	err := r.db.Where("id = ?", ID).Find(&transaction).Error
 
@@ -50,7 +52,7 @@ func (r *repository) FindByUserId(ID int) ([]TransactionHistory, error) {
 	return transaction, nil
 }
 
-func (r *repository) FindById(ID int) (TransactionHistory, error) {
+func (r *repositoryTransaction) FindById(ID int) (TransactionHistory, error) {
 	var transaction TransactionHistory
 
 	err := r.db.Where("id = ?", ID).Find(&transaction).Error
@@ -61,7 +63,7 @@ func (r *repository) FindById(ID int) (TransactionHistory, error) {
 	return transaction, nil
 }
 
-func (r *repository) Update(transaction TransactionHistory) (TransactionHistory, error) {
+func (r *repositoryTransaction) Update(transaction TransactionHistory) (TransactionHistory, error) {
 	err := r.db.Save(&transaction).Error
 	if err != nil {
 		return transaction, err
@@ -71,7 +73,7 @@ func (r *repository) Update(transaction TransactionHistory) (TransactionHistory,
 
 }
 
-func (r *repository) Delete(transaction TransactionHistory) (TransactionHistory, error) {
+func (r *repositoryTransaction) Delete(transaction TransactionHistory) (TransactionHistory, error) {
 	err := r.db.Delete(&transaction).Error
 	if err != nil {
 		return transaction, err

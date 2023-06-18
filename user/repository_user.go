@@ -1,8 +1,10 @@
 package user
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
-type Repository interface {
+type RepositoryUser interface {
 	//create User
 	Save(user User) (User, error)
 	FindById(ID int) (User, error)
