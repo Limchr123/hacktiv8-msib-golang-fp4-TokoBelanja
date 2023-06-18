@@ -61,7 +61,7 @@ func (h *userHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, response)
 		return
 	}
-	token, err := h.authService.GenerateToken(loggedinUser.ID)
+	token, err := h.authService.GenerateToken(loggedinUser.ID, loggedinUser.Role)
 	if err != nil {
 		response := helper.APIresponse(http.StatusUnprocessableEntity, nil)
 		c.JSON(http.StatusUnprocessableEntity, response)

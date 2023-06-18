@@ -1,5 +1,9 @@
 package transaction
 
+import (
+	"time"
+)
+
 // import "time"
 
 // type TransactionFormatter struct {
@@ -20,37 +24,84 @@ package transaction
 
 // }
 
-// type ProductGetFormatter struct {
-// 	ID         int       `json:"id"`
-// 	Title      string    `json:"title"`
-// 	Price      int       `json:"price"`
-// 	Stock      int       `json:"stock"`
-// 	CategoryID int       `json:"category_id"`
-// 	CreatedAt  time.Time `json:"created_at"`
-// }
+type ProductsFormatter struct {
+	ID         int       `json:"id"`
+	Title      string    `json:"title"`
+	Price      int       `json:"price"`
+	Stock      int       `json:"stock"`
+	CategoryID int       `json:"category_id"`
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
 
-// func FormatterGet(product Products) ProductGetFormatter {
-// 	formatterGet := ProductGetFormatter{}
-// 	formatterGet.ID = product.ID
-// 	formatterGet.Title = product.Title
-// 	formatterGet.Price = product.Price
-// 	formatterGet.Stock = product.Stock
-// 	formatterGet.CategoryID = product.CategoryID
-// 	formatterGet.CreatedAt = product.CreatedAt
+type UserFormatter struct {
+	ID        int `json:"id"`
+	FullName  string  `json:"full_name" `
+	Email string `json:"email"`
+	Balance   int `json:"balance" `
+	CreatedAt  time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
 
-// 	return formatterGet
-// }
+type TransactionGetFormatter struct {
+	ID         int       `json:"id"`
+	ProductID      int    `json:"product_id"`
+	UserID      int       `json:"user_id"`
+	Quantity      int       `json:"quantity"`
+	TotalPrice int       `json:"total_price"`
+	Product ProductsFormatter `json:"Product"`
+	User UserFormatter `json:"User"`
+	CreatedAt  time.Time `json:"created_at"`
+}
 
-// func FormatterGetCampaign(products []Products) []ProductGetFormatter {
-// 	productGetFormatter := []ProductGetFormatter{}
+func FormatterGet(transaction TransactionHistory) TransactionGetFormatter {
+	formatterGet := TransactionGetFormatter{}
+	formatterGet.ID = transaction.ID
+	formatterGet.ProductID = transaction.ProductID
+	formatterGet.UserID = transaction.UserID
+	formatterGet.Quantity = transaction.Quantity
+	formatterGet.TotalPrice = transaction.TotalPrice
+	formatterGet.CreatedAt = transaction.CreatedAt
 
-// 	for _, product := range products {
-// 		productFormatter := FormatterGet(product)
-// 		productGetFormatter = append(productGetFormatter, productFormatter)
-// 	}
+	newProduct := transaction.Product
 
-// 	return productGetFormatter
-// }
+	products := ProductsFormatter{}
+	products.ID = newProduct.ID
+	products.Title = newProduct.Title
+	products.Price = newProduct.Price
+	products.Stock = newProduct.Stock
+	products.CategoryID = newProduct.CategoryID
+	products.CreatedAt = newProduct.CreatedAt
+	products.UpdatedAt = newProduct.UpdatedAt
+
+	formatterGet.Product = products
+
+	newUserdua := transaction.User
+
+	users := UserFormatter{}
+
+	users.ID = newUserdua.ID
+	users.Email = newUserdua.Email
+	users.FullName = newUserdua.Email
+	users.Balance = newUserdua.Balance
+	users.CreatedAt = newUserdua.CreatedAt
+	users.UpdatedAt = newUserdua.UpdatedAt
+
+	formatterGet.User = users
+
+	return formatterGet
+}
+
+func FormatterGetCampaign(products []TransactionHistory) []TransactionGetFormatter {
+	productGetFormatter := []TransactionGetFormatter{}
+
+	for _, product := range products {
+		productFormatter := FormatterGet(product)
+		productGetFormatter = append(productGetFormatter, productFormatter)
+	}
+
+	return productGetFormatter
+}
 
 // type ProductUpdateFormatter struct {
 // 	ID         int       `json:"id"`

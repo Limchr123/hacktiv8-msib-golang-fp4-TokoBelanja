@@ -46,15 +46,15 @@ func (h *transactionHandler) CreateTransaction(c *gin.Context) {
 }
 
 func (h *transactionHandler) GetTransaction(c *gin.Context) {
-	idString := c.Param("id")
-	id, _ := strconv.Atoi(idString)
+	productID, _ := strconv.Atoi(c.Query("product_id"))
+	userID, _ := strconv.Atoi(c.Query("user_id"))
 
-	transaction, err := h.transactionService.GetTransaction(int(id))
+	sosmed, err := h.transactionService.GetTransaction(productID, userID)
 	if err != nil {
 		response := helper.APIresponse(http.StatusBadRequest, "Eror to get product")
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	response := helper.APIresponse(http.StatusOK, transaction)
+	response := helper.APIresponse(http.StatusOK, transaction.FormatterGetCampaign(sosmed))
 	c.JSON(http.StatusOK, response)
 }

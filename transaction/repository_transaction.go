@@ -1,6 +1,9 @@
 package transaction
 
 import (
+	"tokoBelanja/product"
+	"tokoBelanja/user"
+
 	"gorm.io/gorm"
 )
 
@@ -10,7 +13,7 @@ type RepositoryTransaction interface {
 	FindById(ID int) (TransactionHistory, error)
 	Update(transaction TransactionHistory) (TransactionHistory, error)
 	Delete(transaction TransactionHistory) (TransactionHistory, error)
-	FindByUserId(userID int) ([]TransactionHistory, error)
+	FindByUserId(productID int, userID int) ([]TransactionHistory, error)
 }
 
 type repositoryTransaction struct {
@@ -24,10 +27,10 @@ func NewRepositoryTransaction(db *gorm.DB) *repositoryTransaction {
 func (r *repositoryTransaction) FindAll() ([]TransactionHistory, error) {
 	var transaction []TransactionHistory
 
-	err := r.db.Preload("Product").Find(&transaction).Error
+	err := r.db.Preload("Product").Preload("User").Find(&transaction).Error
 
 	if err != nil {
-		return transaction, err
+		return transaction, err	
 	}
 
 	return transaction, nil
@@ -42,9 +45,14 @@ func (r *repositoryTransaction) Save(transaction TransactionHistory) (Transactio
 	return transaction, nil
 }
 
-func (r *repositoryTransaction) FindByUserId(ID int) ([]TransactionHistory, error) {
+func (r *repositoryTransaction) FindByUserId(productID int, userID int) ([]TransactionHistory, error) {
 	var transaction []TransactionHistory
-	err := r.db.Where("id = ?", ID).Find(&transaction).Error
+
+	// err := r.db.Joins("User", r.db.Where(&user.User{ID: userID})).Joins("Products", r.db.Where(&product.Product{ID: ProductID})).Find(&comment).Error
+
+	err := r.db.Joins("Product", r.db.Where(&product.Products{ID: productID})).Joins("User", r.db.Where(&user.User{ID: userID})).Find(&transaction).Error
+
+	// err := r.db.Preload("User").Preload("Product").Where("id = ?", ID).Find(&transaction).Error
 
 	if err != nil {
 		return transaction, err

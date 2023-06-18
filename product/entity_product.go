@@ -13,4 +13,5 @@ type Products struct {
 	// Category   category.Categorys `gorm:"foreignKey:CategoryID"`
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
+	
 }

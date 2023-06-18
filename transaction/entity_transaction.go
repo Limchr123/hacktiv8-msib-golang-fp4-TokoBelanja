@@ -12,8 +12,8 @@ type TransactionHistory struct {
 	UserID     int
 	Quantity   int
 	TotalPrice int
-	User       user.User        `gorm:"foreignKey:UserID"`
-	Product    product.Products `gorm:"foreignKey:ProductID"`
+	Product    product.Products `gorm:"foreignKey:ProductID;preload"`
+	User       user.User        `gorm:"foreignKey:UserID;preload"`
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 }

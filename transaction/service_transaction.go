@@ -10,7 +10,8 @@ import (
 type ServiceTransaction interface {
 	CreateTransaction(input TransactionInput) (TransactionHistory, error)
 	// // Login(input LoginInput) (User, error)
-	GetTransaction(ID int) ([]TransactionHistory, error)
+	GetTransaction(productID int,userID int) ([]TransactionHistory, error)
+	// GetTransactionUser(ID int) ([]TransactionHistory, error)
 	// DeleteProduct(ID int) (Products, error)
 	// UpdatedProduct(getUpdatedInput GetinputID, inputProduct UpdatedProduct) (Products, error)
 }
@@ -24,6 +25,7 @@ type serviceTransaction struct {
 func NewService(repository RepositoryTransaction, repositoryProduct product.RepositoryProduct, repositoryUser user.RepositoryUser) *serviceTransaction {
 	return &serviceTransaction{repository, repositoryProduct, repositoryUser}
 }
+
 
 func (s *serviceTransaction) CreateTransaction(input TransactionInput) (TransactionHistory, error) {
 	transaction := TransactionHistory{}
@@ -77,14 +79,24 @@ func (s *serviceTransaction) CreateTransaction(input TransactionInput) (Transact
 	return newProduct, nil
 }
 
-func (s *serviceTransaction) GetTransaction(ID int) ([]TransactionHistory, error) {
-	if ID != 0 {
-		transaction, err := s.repository.FindByUserId(ID)
-		if err != nil {
-			return transaction, err
-		}
-		return transaction, nil
-	}
+// func (s *serviceTransaction) GetTransactionUser(ID int) ([]TransactionHistory, error){
+	
+// }
+
+func (s *serviceTransaction) GetTransaction(productID int ,userID int) ([]TransactionHistory, error) {
+	// if ID != 0 {
+	// 	transaction, err := s.repository.FindByUserId(ID)
+	// 	if err != nil {
+	// 		return transaction, err
+	// 	}
+	// 	return transaction, nil
+	// }
+
+	// transaction, err := s.repository.FindByUserId(productID, userID)
+	// if err != nil {
+	// 	return transaction, err
+	// }
+	// return transaction, nil
 
 	transaction, err := s.repository.FindAll()
 	if err != nil {
